@@ -5,5 +5,9 @@ export default {
 
     set_current_ticket(state, payload) {
         state.currentTicket = payload;
+    },
+
+    set_last_answer(state, payload) {
+        state.lastAnswer = payload;
     }
 }

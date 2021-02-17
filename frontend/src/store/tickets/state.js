@@ -1,4 +1,5 @@
 export default {
     tickets: [],
-    currentTicket: null
+    currentTicket: null,
+    lastAnswer: null
 }

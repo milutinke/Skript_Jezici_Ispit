@@ -15,10 +15,17 @@ class TicketService {
             else throw new Error(error);
         }
 
-        ticket.user = req.user;
-        delete ticket.UserId;
+        let ticketCopy = {
+            id: ticket.id,
+            title: ticket.title,
+            body: ticket.body,
+            status: ticket.status,
+            user: user.firstName + ' ' + user.lastName,
+            createdAt: moment(ticket.createdAt).utc().format('YYYY-MM-DD hh:mm'),
+            updatedAt: moment(ticket.updatedAt).utc().format('YYYY-MM-DD hh:mm')
+        };
 
-        return ticket;
+        return ticketCopy;
     }
 
     async getTicket(id) {
@@ -109,7 +116,7 @@ class TicketService {
         try {
             answer = await sequelize.models.TicketAnswer.create({
                 TicketId: ticketId,
-                UserId: userId,
+                UserId: user.id,
                 body: body
             });
         } catch (error) {
@@ -118,7 +125,14 @@ class TicketService {
             else throw new Error(error);
         }
 
-        return answer;
+        const answerCopy = {};
+        answerCopy.id = answer.id;
+        answerCopy.body = answer.body;
+        answerCopy.user = user.firstName + ' ' + user.lastName;
+        answerCopy.createdAt = moment(answerCopy.createdAt).utc().format('YYYY-MM-DD hh:mm');
+        answerCopy.updatedAt = moment(answerCopy.updatedAt).utc().format('YYYY-MM-DD hh:mm');
+
+        return answerCopy;
     }
 
     async closeTicket(id, user) {

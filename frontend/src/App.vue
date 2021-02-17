@@ -21,10 +21,25 @@
           <b-nav-item v-if="isLoggedIn" to="/" exact exact-active-class="active"
             >Home</b-nav-item
           >
-          <b-nav-item v-if="isLoggedIn" to="/tickets" exact exact-active-class="active"
+          <b-nav-item
+            v-if="isLoggedIn"
+            to="/tickets"
+            exact
+            exact-active-class="active"
             >Tickets</b-nav-item
           >
-          <b-nav-item v-if="isLoggedIn" to="/logout" exact exact-active-class="active"
+          <b-nav-item
+            v-if="isLoggedIn"
+            to="/new-ticket"
+            exact
+            exact-active-class="active"
+            >New Ticket</b-nav-item
+          >
+          <b-nav-item
+            v-if="isLoggedIn"
+            to="/logout"
+            exact
+            exact-active-class="active"
             >Logout</b-nav-item
           >
         </b-nav>

@@ -7,6 +7,7 @@ import Register from '../views/Register.vue'
 import Logout from '../views/Logout.vue'
 import Tickets from '../views/Tickets.vue'
 import Ticket from '../components/Ticket.vue'
+import NewTicket from '../views/NewTicket.vue'
 
 Vue.use(VueRouter)
 
@@ -38,6 +39,17 @@ const routes = [
     path: '/tickets',
     name: 'Tickets',
     component: Tickets,
+
+    beforeEnter(to, from, next) {
+      if (store.state.session === null) next({ name: "Home" });
+      else next();
+    }
+  },
+
+  {
+    path: '/new-ticket/',
+    name: 'NewTicket',
+    component: NewTicket,
 
     beforeEnter(to, from, next) {
       if (store.state.session === null) next({ name: "Home" });

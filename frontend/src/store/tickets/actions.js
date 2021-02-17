@@ -36,6 +36,36 @@ export default {
         }
     },
 
+    async postAnswer(state, payload) {
+        try {
+            const data = await Vue.axios.post(`http://localhost:80/api/ticket/answer/` + payload.id, { body: payload.body }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + getJwt()
+                }
+            });
+
+            state.commit('set_last_answer', data.data);
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async createNewTicket(state, payload) {
+        try {
+            const data = await Vue.axios.post(`http://localhost:80/api/ticket/create`, { title: payload.title, body: payload.body }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + getJwt()
+                }
+            });
+
+            state.commit("set_current_ticket", data.data);
+        } catch (error) {
+            throw error;
+        }
+    },
+
     setCurrentTicket(state, payload) {
         state.commit("set_current_ticket", payload);
     }
