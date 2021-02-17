@@ -1,6 +1,7 @@
 const { sequelize, ValidationError } = require('../models');
 const CustomException = require('../exceptions/custom');
 const Utils = require('../utils');
+const moment = require('moment');
 
 class TicketService {
     async createTicket(title, body, user) {
@@ -33,31 +34,34 @@ class TicketService {
             title: ticket.title,
             body: ticket.body,
             status: ticket.status,
-            user: ticketCreator ? {
-                id: ticketCreator.id,
-                fullName: ticketCreator.getFullName()
-            } : "Deleted User",
-            createdAt: ticket.createdAt,
-            updatedAt: ticket.updatedAt
+            user: ticketCreator ? ticketCreator.getFullName() : "Deleted User",
+            createdAt: moment(ticket.createdAt).utc().format('YYYY-MM-DD hh:mm'),
+            updatedAt: moment(ticket.updatedAt).utc().format('YYYY-MM-DD hh:mm')
         };
 
         let returnData = {};
         returnData.ticket = ticketCopy;
-        returnData.answers = await sequelize.models.TicketAnswer.findAll({ where: { TicketId: id } });
+        returnData.answers = [];
 
-        if (returnData.answers) {
-            for (let i = 0; i < returnData.answers.length; i++) {
-                const user = await sequelize.models.User.findOne({ where: { id: returnData.answers[i].UserId } });
+        const answers = await sequelize.models.TicketAnswer.findAll({ where: { TicketId: id } });
+
+        if (answers) {
+            for (let i = 0; i < answers.length; i++) {
+                const currentAnswer = answers[i];
+                const user = await sequelize.models.User.findOne({ where: { id: currentAnswer.UserId } });
+
+                let answerCopy = {};
+
+                answerCopy.body = currentAnswer.body;
 
                 if (!user)
-                    returnData.answers[i].user = "Deleted User";
-                else returnData.answers[i].user = {
-                    id: user.id,
-                    fullName: user.getFullName()
-                };
+                    answerCopy.user = "Deleted User";
+                else answerCopy.user = user.getFullName();
 
-                delete returnData.answers[i].UserId;
-                delete returnData.answers[i].TicketId;
+                answerCopy.createdAt = moment(currentAnswer.createdAt).utc().format('YYYY-MM-DD hh:mm');
+                answerCopy.updatedAt = moment(currentAnswer.updatedAt).utc().format('YYYY-MM-DD hh:mm');
+
+                returnData.answers.push(answerCopy);
             }
         }
 
@@ -77,12 +81,9 @@ class TicketService {
                 title: ticket.title,
                 body: ticket.body,
                 status: ticket.status,
-                user: ticketCreator ? {
-                    id: ticketCreator.id,
-                    fullName: ticketCreator.getFullName()
-                } : "Deleted User",
-                createdAt: ticket.createdAt,
-                updatedAt: ticket.updatedAt
+                user: ticketCreator ? ticketCreator.getFullName() : "Deleted User",
+                createdAt: moment(ticket.createdAt).utc().format('YYYY-MM-DD hh:mm'),
+                updatedAt: moment(ticket.updatedAt).utc().format('YYYY-MM-DD hh:mm'),
             };
 
             ticketsCopies.push(ticketCopy);
@@ -91,7 +92,7 @@ class TicketService {
         return ticketsCopies;
     }
 
-    async postAnswer(ticketId, userId, body) {
+    async postAnswer(ticketId, user, body) {
         const foundTicket = await sequelize.models.Ticket.findOne({ where: { id: ticketId } });
 
         if (!foundTicket)
@@ -100,7 +101,7 @@ class TicketService {
         if (foundTicket.status === 0)
             throw new CustomException({ error: 'Ticket is closed, you can not answer to it anymore!', forbidden: true });
 
-        if (foundTicket.UserId !== userId)
+        if (foundTicket.UserId !== user.id && !user.isAdmin)
             throw new CustomException({ error: 'Forbidden', forbidden: true })
 
         let answer;
@@ -120,7 +121,7 @@ class TicketService {
         return answer;
     }
 
-    async closeTicket(id) {
+    async closeTicket(id, user) {
         const ticket = await sequelize.models.Ticket.findOne({ where: { id } });
 
         if (!ticket)
@@ -128,6 +129,9 @@ class TicketService {
 
         if (ticket.status === 0)
             throw new CustomException({ error: 'Ticket has already been closed!', forbidden: true });
+
+        if (ticket.UserId !== user.id && !user.isAdmin)
+            throw new CustomException({ error: 'Forbidden', forbidden: true })
 
         await ticket.update({
             status: 0

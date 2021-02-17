@@ -25,7 +25,7 @@ class TicketController {
             }
 
             const { body } = req.body;
-            const answer = await TicketService.postAnswer(id, req.user.id, body);
+            const answer = await TicketService.postAnswer(id, req.user, body);
             res.status(201).json({ answer });
         } catch (error) {
             if (error instanceof CustomException)
@@ -59,7 +59,7 @@ class TicketController {
             if (!req.params.id)
                 throw new Error('Please provide a valid ticket id!');
 
-            res.status(200).json(await TicketService.closeTicket(req.params.id));
+            res.status(200).json(await TicketService.closeTicket(req.params.id, req.user));
         } catch (error) {
             if (error instanceof CustomException)
                 res.status(400).json(error.payload);

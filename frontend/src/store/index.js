@@ -1,19 +1,27 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+
 import { SessionActions, SessionMutations, SessionState } from './session'
+import { TicketState, TicketMutations, TicketActions } from './tickets'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    ...SessionState
+    ...SessionState,
+    ...TicketState
   },
+
   mutations: {
-    ...SessionMutations
+    ...SessionMutations,
+    ...TicketMutations
   },
+
   actions: {
-    ...SessionActions
+    ...SessionActions,
+    ...TicketActions
   },
+
   modules: {
   }
 })
