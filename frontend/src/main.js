@@ -15,11 +15,6 @@ Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 Vue.use(VueAxios, axios)
 
-Object.defineProperty(Vue, "BASE_API_URL", {
-  value: "http://localhost:80/api",
-  writable: false
-});
-
 new Vue({
   router,
   store,

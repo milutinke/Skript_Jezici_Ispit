@@ -1,6 +1,6 @@
 module.exports = {
     express: {
-        port: 3000,
+        port: 80,
         static_dir: '/dist',
         home_route: '/home'
     },

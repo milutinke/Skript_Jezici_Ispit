@@ -7,7 +7,7 @@ class AuthController {
             const { user, token } = await AuthService.register(firstName, lastName, email, password);
             res.status(201).json({ user, token });
         } catch (error) {
-            res.status(501).json({ error: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 
@@ -17,7 +17,7 @@ class AuthController {
             const { user, token } = await AuthService.login(email, password);
             res.status(200).json({ user, token });
         } catch (error) {
-            res.status(501).json({ error: error.message });
+            res.status(401).json({ error: error.message });
         }
     }
 }

@@ -68,7 +68,8 @@
 
     <b-button @click="onSubmit" type="submit" variant="primary">{{
       inputMode === "register" ? "Register" : "Login"
-    }}</b-button>&nbsp;
+    }}</b-button
+    >&nbsp;
     <b-button @click="onReset" type="reset" variant="danger">Reset</b-button>
   </b-container>
 </template>
@@ -125,7 +126,7 @@ export default {
   },
 
   methods: {
-    onSubmit() {
+    async onSubmit() {
       if (this.inputMode === "register") {
         if (!this.isFirstNameValid) {
           this.firstNameError = "You must provide your first name!";
@@ -147,6 +148,40 @@ export default {
         this.passwordError = "You must provide your password!";
         return;
       } else this.passwordError = null;
+
+      try {
+        if (this.inputMode === "register") {
+          await this.$store.dispatch("register", {
+            firstName: this.firstName,
+            lastName: this.lastName,
+            email: this.email,
+            password: this.password,
+          });
+        } else {
+          await this.$store.dispatch("login", {
+            email: this.email,
+            password: this.password,
+          });
+        }
+
+        if (window.localStorage) {
+          window.localStorage.setItem(
+            "ticket-system-session",
+            JSON.stringify(this.$store.state.session)
+          );
+        }
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response);
+          alert(error.response.data.error);
+        } else if (error.request) {
+          console.log(error.request);
+          alert("Unable to connect to the server!");
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+      }
     },
 
     onReset() {

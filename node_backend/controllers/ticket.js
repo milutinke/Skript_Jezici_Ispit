@@ -8,7 +8,7 @@ class TicketController {
             const ticket = await TicketService.createTicket(title, body, req.user);
             res.status(201).json({ ticket });
         } catch (error) {
-            res.status(501).json({ error: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 
@@ -29,8 +29,8 @@ class TicketController {
             res.status(201).json({ answer });
         } catch (error) {
             if (error instanceof CustomException)
-                res.status(501).json(error.payload);
-            else res.status(501).json({ error: error.message });
+                res.status(400).json(error.payload);
+            else res.status(400).json({ error: error.message });
         }
     }
 
@@ -62,8 +62,8 @@ class TicketController {
             res.status(200).json(await TicketService.closeTicket(req.params.id));
         } catch (error) {
             if (error instanceof CustomException)
-                res.status(501).json(error.payload);
-            else res.status(501).json({ error: error.message });
+                res.status(400).json(error.payload);
+            else res.status(400).json({ error: error.message });
         }
     }
 }
