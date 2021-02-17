@@ -19,6 +19,12 @@ const routes = [
   },
 
   {
+    path: '/home',
+    name: 'Home2',
+    component: Home
+  },
+
+  {
     path: '/register',
     name: 'Register',
     component: Register

@@ -9,14 +9,17 @@ const Cors = require('cors');
 // Express Configuration and Instantiation
 const expressApp = Express();
 
-// Initialize the router
+// Express Configuration
 expressApp.use(Cors());
 expressApp.use(Express.json());
 require('./routes')(expressApp);
-
-// Express Middelwares
+expressApp.use('/js', Express.static(Path.join(__dirname, Configs.express.static_dir + '/js')));
+expressApp.use('/css', Express.static(Path.join(__dirname, Configs.express.static_dir + '/css')));
+expressApp.use('/home', Express.static(Path.join(__dirname, Configs.express.static_dir)));
 expressApp.use(History);
-expressApp.use(Configs.express.home_route, Express.static(Path.join(process.cwd(), Configs.express.static_dir)));
+expressApp.use('/js', Express.static(Path.join(__dirname, Configs.express.static_dir + '/js')));
+expressApp.use('/css', Express.static(Path.join(__dirname, Configs.express.static_dir + '/css')));
+expressApp.use('/home', Express.static(Path.join(__dirname, Configs.express.static_dir)));
 
 // Start the Express server
 expressApp.listen(Configs.express.port, () => console.log(`Node server has been started on port: ${Configs.express.port}`.bgGreen.white));
